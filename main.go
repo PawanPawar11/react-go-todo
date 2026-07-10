@@ -41,6 +41,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/api/todos", getTodos)
+	app.Post("/api/todos", createTodo)
 
 	app.Listen("127.0.0.1:8080")
 }
@@ -82,4 +83,25 @@ func getTodos(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(todos)
+}
+
+func createTodo(c *fiber.Ctx) error {
+	collection := DB.Collection("todos")
+
+	var todo Todo
+
+	if err := c.BodyParser(&todo); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	result, err := collection.InsertOne(context.Background(), todo)
+	if err != nil {
+		return err
+	}
+
+	todo.ID = result.InsertedID.(bson.ObjectID)
+
+	return c.Status(fiber.StatusCreated).JSON(todo)
 }
