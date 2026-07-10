@@ -34,8 +34,27 @@ func main() {
 
 	app := fiber.New()
 
+	// Get All Todos
 	app.Get("/api/todos", func(c *fiber.Ctx) error {
 		return c.Status(200).JSON(todos)
+	})
+
+	// Create a Todo
+	app.Post("/api/todos", func(c *fiber.Ctx) error {
+		todo := &Todo{}
+
+		if err := c.BodyParser(todo); err != nil {
+			return err
+		}
+
+		if todo.Body == "" {
+			return c.Status(400).JSON(fiber.Map{"error": "Todo body is a required field"})
+		}
+
+		todo.ID = len(todos) + 1
+		todos = append(todos, *todo)
+
+		return c.Status(201).JSON(todos)
 	})
 
 	app.Listen("127.0.0.1:8080")
