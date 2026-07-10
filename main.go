@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -55,6 +56,21 @@ func main() {
 		todos = append(todos, *todo)
 
 		return c.Status(201).JSON(todos)
+	})
+
+	// Update a Todo
+	app.Patch("/api/todos/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+
+		for idx, todo := range todos {
+			if fmt.Sprint(todo.ID) == id {
+				todos[idx].Completed = true
+
+				return c.Status(200).JSON(todos[idx])
+			}
+		}
+
+		return c.Status(404).JSON(fiber.Map{"error": "Specified todo resource not found"})
 	})
 
 	app.Listen("127.0.0.1:8080")

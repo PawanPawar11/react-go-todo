@@ -6,6 +6,11 @@ POST http://127.0.0.1:8080/api/todos
 Content-Type: application/json
 
 {
-    "body" : "Learn React",
-    "completed" : true
+    "body" : "Learn C++",
+    "completed" : false
 }
+
+###
+
+PATCH http://127.0.0.1:8080/api/todos/5
+
