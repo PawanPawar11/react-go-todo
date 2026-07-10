@@ -42,6 +42,7 @@ func main() {
 
 	app.Get("/api/todos", getTodos)
 	app.Post("/api/todos", createTodo)
+	app.Patch("/api/todos/:id", updateTodo)
 
 	app.Listen("127.0.0.1:8080")
 }
@@ -104,4 +105,32 @@ func createTodo(c *fiber.Ctx) error {
 	todo.ID = result.InsertedID.(bson.ObjectID)
 
 	return c.Status(fiber.StatusCreated).JSON(todo)
+}
+
+func updateTodo(c *fiber.Ctx) error {
+	collection := DB.Collection("todos")
+
+	id := c.Params("id")
+
+	objectID, err := bson.ObjectIDFromHex(id)
+
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid todo ID"})
+	}
+
+	filter := bson.M{"_id": objectID}
+
+	update := bson.M{"$set": bson.M{"completed": true}}
+
+	result, err := collection.UpdateOne(
+		context.Background(),
+		filter,
+		update,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return c.Status(200).JSON(result)
 }
