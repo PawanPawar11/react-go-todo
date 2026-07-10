@@ -1,19 +1,26 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type Todo struct {
-	ID        int    `json:"id"`
-	Body      string `json:"body"`
-	Completed bool   `json:"completed"`
+	ID        bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	Body      string        `bson:"body" json:"body"`
+	Completed bool          `bson:"completed" json:"completed"`
 }
+
+var DB *mongo.Database
 
 func main() {
 	if os.Getenv("ENV") != "production" {
@@ -22,71 +29,34 @@ func main() {
 		}
 	}
 
-	// Sample Block
-	/*
-		todos := []Todo{
-			{ID: 1, Body: "Sunday", Completed: true},
-			{ID: 2, Body: "Monday", Completed: false},
-			{ID: 3, Body: "Tuesday", Completed: true},
-		}
-	*/
+	uri := os.Getenv("MONGO_URI")
 
-	todos := []Todo{}
+	if uri == "" {
+		log.Fatal("Failed to load MONGO_URI from .env file")
+	}
+
+	err := Connect(&uri)
+	fmt.Println(err)
 
 	app := fiber.New()
 
-	// Get All Todos
-	app.Get("/api/todos", func(c *fiber.Ctx) error {
-		return c.Status(200).JSON(todos)
-	})
-
-	// Create a Todo
-	app.Post("/api/todos", func(c *fiber.Ctx) error {
-		todo := &Todo{}
-
-		if err := c.BodyParser(todo); err != nil {
-			return err
-		}
-
-		if todo.Body == "" {
-			return c.Status(400).JSON(fiber.Map{"error": "Todo body is a required field"})
-		}
-
-		todo.ID = len(todos) + 1
-		todos = append(todos, *todo)
-
-		return c.Status(201).JSON(todos)
-	})
-
-	// Update a Todo
-	app.Patch("/api/todos/:id", func(c *fiber.Ctx) error {
-		id := c.Params("id")
-
-		for idx, todo := range todos {
-			if fmt.Sprint(todo.ID) == id {
-				todos[idx].Completed = true
-
-				return c.Status(200).JSON(todos[idx])
-			}
-		}
-
-		return c.Status(404).JSON(fiber.Map{"error": "Specified todo resource not found"})
-	})
-
-	// Delete a Todo
-	app.Delete("/api/todos/:id", func(c *fiber.Ctx) error {
-		id := c.Params("id")
-
-		for idx, todo := range todos {
-			if fmt.Sprint(todo.ID) == id {
-				todos = append(todos[:idx], todos[idx+1:]...)
-
-				return c.Status(200).JSON(fiber.Map{"success": "Resource deleted successfully"})
-			}
-		}
-
-		return c.Status(404).JSON(fiber.Map{"error": "Specified todo resource not found"})
-	})
-
 	app.Listen("127.0.0.1:8080")
+}
+
+func Connect(uri *string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(options.Client().ApplyURI(*uri))
+	if err != nil {
+		return err
+	}
+
+	if err := client.Ping(ctx, nil); err != nil {
+		return err
+	}
+
+	DB = client.Database("react-go-todo_db")
+
+	return nil
 }
