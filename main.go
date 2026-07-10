@@ -40,6 +40,8 @@ func main() {
 
 	app := fiber.New()
 
+	app.Get("/api/todos", getTodos)
+
 	app.Listen("127.0.0.1:8080")
 }
 
@@ -59,4 +61,25 @@ func Connect(uri *string) error {
 	DB = client.Database("react-go-todo_db")
 
 	return nil
+}
+
+func getTodos(c *fiber.Ctx) error {
+	collection := DB.Collection("todos")
+
+	cursor, err := collection.Find(
+		context.Background(),
+		bson.M{},
+	)
+	if err != nil {
+		return err
+	}
+
+	var todos []Todo
+
+	err = cursor.All(context.Background(), &todos)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(todos)
 }
