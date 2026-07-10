@@ -73,5 +73,20 @@ func main() {
 		return c.Status(404).JSON(fiber.Map{"error": "Specified todo resource not found"})
 	})
 
+	// Delete a Todo
+	app.Delete("/api/todos/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+
+		for idx, todo := range todos {
+			if fmt.Sprint(todo.ID) == id {
+				todos = append(todos[:idx], todos[idx+1:]...)
+
+				return c.Status(200).JSON(fiber.Map{"success": "Resource deleted successfully"})
+			}
+		}
+
+		return c.Status(404).JSON(fiber.Map{"error": "Specified todo resource not found"})
+	})
+
 	app.Listen("127.0.0.1:8080")
 }
