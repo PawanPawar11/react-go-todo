@@ -43,6 +43,7 @@ func main() {
 	app.Get("/api/todos", getTodos)
 	app.Post("/api/todos", createTodo)
 	app.Patch("/api/todos/:id", updateTodo)
+	app.Delete("/api/todos/:id", deleteTodo)
 
 	app.Listen("127.0.0.1:8080")
 }
@@ -133,4 +134,25 @@ func updateTodo(c *fiber.Ctx) error {
 	}
 
 	return c.Status(200).JSON(result)
+}
+
+func deleteTodo(c *fiber.Ctx) error {
+	collection := DB.Collection("todos")
+
+	id := c.Params("id")
+
+	objectID, err := bson.ObjectIDFromHex(id)
+
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid todo ID"})
+	}
+
+	filter := bson.M{"_id": objectID}
+	_, err = collection.DeleteOne(context.Background(), filter)
+
+	if err != nil {
+		return err
+	}
+
+	return c.Status(200).JSON(fiber.Map{"success": "Record deleted successfully"})
 }
