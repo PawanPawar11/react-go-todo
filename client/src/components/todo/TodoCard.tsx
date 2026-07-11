@@ -1,4 +1,4 @@
-import { Card, HStack, IconButton, Checkbox, Text } from "@chakra-ui/react";
+import { Card, Checkbox, HStack, IconButton, Text } from "@chakra-ui/react";
 
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
@@ -6,9 +6,11 @@ import type { Todo } from "../../types/todo";
 
 type Props = {
   todo: Todo;
+  onToggle: (todo: Todo) => void;
+  onDelete: (id: string) => void;
 };
 
-export default function TodoCard({ todo }: Props) {
+export default function TodoCard({ todo, onToggle, onDelete }: Props) {
   return (
     <Card.Root
       p={4}
@@ -23,7 +25,10 @@ export default function TodoCard({ todo }: Props) {
     >
       <HStack justify="space-between">
         <HStack gap={4}>
-          <Checkbox.Root checked={todo.completed}>
+          <Checkbox.Root
+            checked={todo.completed}
+            onCheckedChange={() => onToggle(todo)}
+          >
             <Checkbox.HiddenInput />
             <Checkbox.Control />
           </Checkbox.Root>
@@ -43,8 +48,9 @@ export default function TodoCard({ todo }: Props) {
 
           <IconButton
             aria-label="Delete Todo"
-            colorPalette="red"
             variant="ghost"
+            colorPalette="red"
+            onClick={() => onDelete(todo.id)}
           >
             <FiTrash2 />
           </IconButton>

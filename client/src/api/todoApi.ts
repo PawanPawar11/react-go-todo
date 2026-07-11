@@ -9,22 +9,22 @@ export async function getTodos(): Promise<Todo[]> {
 export async function createTodo(body: string): Promise<Todo> {
   const { data } = await api.post<Todo>("/todos", {
     body,
-    completed: false,
   });
 
   return data;
 }
 
-export async function updateTodo(id: string, completed: boolean) {
-  const { data } = await api.patch(`/todos/${id}`, {
+export async function updateTodo(
+  id: string,
+  completed: boolean,
+): Promise<Todo> {
+  const { data } = await api.patch<Todo>(`/todos/${id}`, {
     completed,
   });
 
   return data;
 }
 
-export async function deleteTodo(id: string) {
-  const { data } = await api.delete(`/todos/${id}`);
-
-  return data;
+export async function deleteTodo(id: string): Promise<void> {
+  await api.delete(`/todos/${id}`);
 }

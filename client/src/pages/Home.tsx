@@ -9,9 +9,27 @@ import Error from "../components/common/Error";
 import EmptyState from "../components/todo/EmptyState";
 
 import { useTodos } from "../hooks/useTodos";
+import { useUpdateTodo } from "../hooks/useUpdateTodo";
+import { useDeleteTodo } from "../hooks/useDeleteTodo";
+
+import type { Todo } from "../types/todo";
 
 export default function Home() {
-  const { data: todos, isPending, error } = useTodos();
+  const { data: todos = [], isPending, error } = useTodos();
+
+  const updateMutation = useUpdateTodo();
+  const deleteMutation = useDeleteTodo();
+
+  function handleToggle(todo: Todo) {
+    updateMutation.mutate({
+      id: todo.id,
+      completed: !todo.completed,
+    });
+  }
+
+  function handleDelete(id: string) {
+    deleteMutation.mutate(id);
+  }
 
   return (
     <Box bg="gray.50" minH="100vh" py={8}>
@@ -24,9 +42,15 @@ export default function Home() {
 
         {error && <Error message={error.message} />}
 
-        {todos && todos.length === 0 && <EmptyState />}
+        {!isPending && todos.length === 0 && <EmptyState />}
 
-        {todos && todos.length > 0 && <TodoList todos={todos} />}
+        {!isPending && todos.length > 0 && (
+          <TodoList
+            todos={todos}
+            onToggle={handleToggle}
+            onDelete={handleDelete}
+          />
+        )}
       </PageContainer>
     </Box>
   );
