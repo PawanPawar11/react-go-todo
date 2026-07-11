@@ -15,8 +15,10 @@ export async function createTodo(body: string): Promise<Todo> {
   return data;
 }
 
-export async function updateTodo(id: string) {
-  const { data } = await api.patch(`/todos/${id}`);
+export async function updateTodo(id: string, completed: boolean) {
+  const { data } = await api.patch(`/todos/${id}`, {
+    completed,
+  });
 
   return data;
 }

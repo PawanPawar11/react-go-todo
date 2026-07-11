@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/PawanPawar11/react-go-todo/config"
+	"github.com/PawanPawar11/react-go-todo/dto"
 	"github.com/PawanPawar11/react-go-todo/models"
 	"github.com/gofiber/fiber/v2"
 
@@ -54,26 +55,50 @@ func UpdateTodo(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	objectID, err := bson.ObjectIDFromHex(id)
-
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Invalid todo ID"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid todo ID",
+		})
 	}
 
-	filter := bson.M{"_id": objectID}
+	var req dto.UpdateTodoRequest
 
-	update := bson.M{"$set": bson.M{"completed": true}}
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
 
-	result, err := collection.UpdateOne(
+	filter := bson.M{
+		"_id": objectID,
+	}
+
+	_, err = collection.UpdateOne(
 		context.Background(),
 		filter,
-		update,
+		bson.M{
+			"$set": bson.M{
+				"completed": req.Completed,
+			},
+		},
 	)
 
 	if err != nil {
 		return err
 	}
 
-	return c.Status(200).JSON(result)
+	var todo models.Todo
+
+	err = collection.FindOne(
+		context.Background(),
+		filter,
+	).Decode(&todo)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(todo)
 }
 
 func DeleteTodo(c *fiber.Ctx) error {
@@ -88,11 +113,17 @@ func DeleteTodo(c *fiber.Ctx) error {
 	}
 
 	filter := bson.M{"_id": objectID}
-	_, err = collection.DeleteOne(context.Background(), filter)
+	result, err := collection.DeleteOne(context.Background(), filter)
 
 	if err != nil {
 		return err
 	}
 
-	return c.Status(200).JSON(fiber.Map{"success": "Record deleted successfully"})
+	if result.DeletedCount == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Todo not found",
+		})
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
 }

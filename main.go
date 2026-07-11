@@ -7,6 +7,7 @@ import (
 	"github.com/PawanPawar11/react-go-todo/config"
 	"github.com/PawanPawar11/react-go-todo/routes"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 )
 
@@ -22,6 +23,8 @@ func main() {
 	}
 
 	app := fiber.New()
+
+	app.Use(cors.New())
 
 	routes.SetupTodoRoutes(app)
 
