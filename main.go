@@ -28,5 +28,10 @@ func main() {
 
 	routes.SetupTodoRoutes(app)
 
-	log.Fatal(app.Listen(":8080"))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Fatal(app.Listen(":" + port))
 }
