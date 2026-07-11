@@ -1,11 +1,17 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
+
+import Header from "../components/layout/Header";
+import PageContainer from "../components/layout/PageContainer";
+import SectionHeader from "../components/common/SectionHeader";
 
 export default function Home() {
   return (
-    <Box minH="100vh" bg="gray.500" px={6} py={12}>
-      <Heading mb={2}>Todo App</Heading>
+    <Box bg="gray.50" minH="100vh" py={8}>
+      <PageContainer>
+        <Header />
 
-      <Text color="gray.800">React + Go + MongoDB</Text>
+        <SectionHeader>Tasks</SectionHeader>
+      </PageContainer>
     </Box>
   );
 }
