@@ -1,5 +1,6 @@
 package dto
 
 type UpdateTodoRequest struct {
-	Completed bool `json:"completed"`
+	Body      *string `json:"body,omitempty"`
+	Completed *bool   `json:"completed,omitempty"`
 }

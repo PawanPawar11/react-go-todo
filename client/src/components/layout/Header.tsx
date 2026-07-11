@@ -1,39 +1,52 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Flex, Heading, HStack } from "@chakra-ui/react";
+import { ColorModeButton } from "../ui/color-mode";
+import { FiCheckSquare } from "react-icons/fi";
 
 export default function Header() {
   return (
-    <Box
-      bgGradient="linear(to-r, green.900, green.700)"
-      color="white"
-      borderRadius="2xl"
-      py={{
-        base: 14,
-        md: 24,
-      }}
-      textAlign="center"
-      mb={10}
-      boxShadow="lg"
+    <Flex
+      as="header"
+      align="center"
+      justify="space-between"
+      py={5}
+      mb={8}
+      borderBottomWidth="1px"
+      borderColor="border"
+      transition="border-color .2s ease"
     >
-      <Heading
-        fontSize={{
-          base: "4xl",
-          md: "6xl",
-        }}
-        fontWeight="bold"
-      >
-        Todo App
-      </Heading>
+      <HStack gap={3}>
+        <Flex
+          align="center"
+          justify="center"
+          boxSize="10"
+          borderRadius="xl"
+          bgGradient="linear(to-br, #8b5cf6, #4f46e5)"
+          color="fg"
+          shadow="md"
+        >
+          <FiCheckSquare size={20} color="fg" />
+        </Flex>
 
-      <Text
-        mt={4}
-        fontSize={{
-          base: "md",
-          md: "lg",
+        <Heading
+          fontSize="2xl"
+          fontWeight="bold"
+          bgGradient="linear(to-r, #7c3aed, #4f46e5)"
+          bgClip="text"
+          color="fg"
+        >
+          TaskFlow
+        </Heading>
+      </HStack>
+
+      <ColorModeButton
+        size="md"
+        variant="ghost"
+        borderRadius="xl"
+        _hover={{
+          bg: "bg.subtle",
         }}
-        opacity={0.85}
-      >
-        Organize your day efficiently.
-      </Text>
-    </Box>
+        transition="background-color .2s ease"
+      />
+    </Flex>
   );
 }

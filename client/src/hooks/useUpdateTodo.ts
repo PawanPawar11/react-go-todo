@@ -5,8 +5,15 @@ export function useUpdateTodo() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, completed }: { id: string; completed: boolean }) =>
-      updateTodo(id, completed),
+    mutationFn: ({
+      id,
+      body,
+      completed,
+    }: {
+      id: string;
+      body?: string;
+      completed?: boolean;
+    }) => updateTodo(id, { body, completed }),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

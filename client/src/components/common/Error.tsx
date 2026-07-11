@@ -7,7 +7,7 @@ type Props = {
 export default function Error({ message }: Props) {
   return (
     <Center py={16}>
-      <Text color="red.500">{message}</Text>
+      <Text color="red.fg">{message}</Text>
     </Center>
   );
 }

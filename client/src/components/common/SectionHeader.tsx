@@ -1,13 +1,17 @@
-import { Flex, Heading } from "@chakra-ui/react";
+import { Box, Heading, HStack, Text } from "@chakra-ui/react";
 
-import type { PropsWithChildren } from "react";
 import CreateTodoDialog from "../todo/CreateTodoDialog";
 
-export default function SectionHeader({ children }: PropsWithChildren) {
+export default function SectionHeader() {
   return (
-    <Flex justify="space-between" align="center" mb={6}>
-      <Heading size="xl">{children}</Heading>
+    <HStack justify="space-between" align="center" mb={6}>
+      <Box>
+        <Heading size="xl">My Tasks</Heading>
+
+        <Text color="fg.muted">Organize your work efficiently</Text>
+      </Box>
+
       <CreateTodoDialog />
-    </Flex>
+    </HStack>
   );
 }

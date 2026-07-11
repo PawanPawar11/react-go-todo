@@ -73,13 +73,19 @@ func UpdateTodo(c *fiber.Ctx) error {
 		"_id": objectID,
 	}
 
+	update := bson.M{}
+	if req.Body != nil {
+		update["body"] = *req.Body
+	}
+	if req.Completed != nil {
+		update["completed"] = *req.Completed
+	}
+
 	_, err = collection.UpdateOne(
 		context.Background(),
 		filter,
 		bson.M{
-			"$set": bson.M{
-				"completed": req.Completed,
-			},
+			"$set": update,
 		},
 	)
 
