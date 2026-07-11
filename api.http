@@ -1,19 +1,38 @@
+# Get all todos
 GET http://127.0.0.1:8080/api/todos
 
-### 
+###
 
+# Create a new todo
 POST http://127.0.0.1:8080/api/todos
 Content-Type: application/json
 
 {
-    "body" : "Learn Svelte",
-    "completed" : false
+    "body": "Learn Go, Fiber, MongoDB & React",
+    "completed": false
 }
 
 ###
 
-PATCH http://127.0.0.1:8080/api/todos/6a51304fa3eddbbce2791249
+# Update todo completion status
+PATCH http://127.0.0.1:8080/api/todos/6a521be9b3cb409a46343175
+Content-Type: application/json
+
+{
+    "completed": true
+}
 
 ###
 
-DELETE http://127.0.0.1:8080/api/todos/6a511692703c61c95dfe4070
+# Rename todo body text
+PATCH http://127.0.0.1:8080/api/todos/6a521be9b3cb409a46343175
+Content-Type: application/json
+
+{
+    "body": "Master Go, Fiber, MongoDB & React"
+}
+
+###
+
+# Delete a todo
+DELETE http://127.0.0.1:8080/api/todos/6a520f19112191e85d8f93a1

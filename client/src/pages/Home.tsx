@@ -9,6 +9,7 @@ import {
   Flex,
   Heading,
   Icon,
+  Image,
 } from "@chakra-ui/react";
 import { FiSearch } from "react-icons/fi";
 
@@ -90,9 +91,18 @@ export default function Home() {
           >
             <Stack gap={5}>
               <Box>
-                <Heading fontSize="2xl" fontWeight="bold" color="fg">
-                  Task Dashboard
-                </Heading>
+                <HStack gap={3}>
+                  <Image
+                    src="/favicon.png"
+                    alt="Dashboard"
+                    boxSize="8"
+                    objectFit="contain"
+                  />
+
+                  <Heading fontSize="2xl" fontWeight="bold" color="fg">
+                    Task Dashboard
+                  </Heading>
+                </HStack>
 
                 <Text mt={2} opacity={0.9} color="fg">
                   {completedCount === totalCount
